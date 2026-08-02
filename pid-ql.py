@@ -54,7 +54,24 @@ for ep in range(n):
 
         next_s = cord_to_state(next_y,next_x)
 
-        #PID ntr ae dh
+        target = np.array([next_y,next_x],dtype=float)
+        cur_pos = np.array([y,x],dtype=float)
+        prev_eror = target - cur_pos
+
+        integral = 0
+        while True:
+            error = target - cur_pos
+
+            if np.linalg.norm(error) <= d:
+                break
+
+            derivative = (error - prev_eror) / dt
+            integral += error*dt
+            prev_eror = error
+
+            ut = Kp*error + Kd*derivative + Ki*integral
+
+            cur_pos += ut*dt
 
         if next_s == cord_to_state(goal[0],goal[1]):
             reward = 100
@@ -75,7 +92,7 @@ plt.grid(True)
 plt.xlabel('Episode')
 plt.ylabel('Number of Steps')
 plt.title('Steps Taken Per Learning Episode')
-plt.xlim([0, N])
+plt.xlim([0, n])
 plt.ylim([0, np.max(steps_per_episode) + 5])
 
 print("\n--- Final Operational Metrics ---")
