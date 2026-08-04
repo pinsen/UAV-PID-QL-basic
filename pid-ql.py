@@ -24,10 +24,10 @@ gamma = 0.7
 epsilon = 0.1
 n = 500 # <-- yg ini number episode
 # konstannya pid
-Kp = 0.8
-Kd = 0.9
-Ki = 0.0    
-d = 0.3 # <-- error radius
+Kp = 5.0
+Kd = 0.15
+Ki = 0.01   
+d = 0.1 # <-- error radius
 dt = 0.01 # <-- interval
 
 Q = np.zeros((num_states, num_actions))
@@ -57,8 +57,8 @@ for ep in range(n):
         target = np.array([next_y,next_x],dtype=float)
         cur_pos = np.array([y,x],dtype=float)
         prev_eror = target - cur_pos
+        integral = np.array([0,0],dtype=float)
 
-        integral = 0
         while True:
             error = target - cur_pos
 
@@ -67,11 +67,11 @@ for ep in range(n):
 
             derivative = (error - prev_eror) / dt
             integral += error*dt
-            prev_eror = error
 
             ut = Kp*error + Kd*derivative + Ki*integral
-
             cur_pos += ut*dt
+
+            prev_eror = error
 
         if next_s == cord_to_state(goal[0],goal[1]):
             reward = 100
